@@ -1,58 +1,81 @@
 function meuEscopo() {
 
   const form = document.querySelector('.form');
-  const resultado = document.querySelector('.resultado');
 
-  function calculaIMC(event) {
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-    event.preventDefault();
+    const inputPeso = form.querySelector('.peso');
+    const inputAltura = form.querySelector('.altura');
 
-    const peso = form.querySelector('.peso');
-    const altura = form.querySelector('.altura');
+    inputAltura.value = pontoFlutuante(inputAltura);
+    inputPeso.value = pontoFlutuante(inputPeso);
 
-    altura.value = altura.value.replace(',', '.');
-    peso.value = peso.value.replace(',', '.');
-
-    if (altura.value.length === 3) {
-      altura.value = altura.value / 100;
-      altura.value = altura.value.concat('0');
+    if (inputAltura.value.length === 3) {
+      inputAltura.value = inputAltura.value / 100;
+      inputAltura.value = inputAltura.value.concat('0');
     }
 
-    const calculo = peso.value / (altura.value * altura.value);
+    const peso = Number(inputPeso.value);
+    const altura = Number(inputAltura.value);
 
-    if (isNaN(calculo) || calculo === 0 || calculo === Infinity) {
 
-      resultado.style = 'background-color: var(--primary-color-obesidade)';
-      return resultado.innerHTML = `<p>Valor Inválido/Não Informado</p>`;
+    if (!peso) {
+      apresentaResult('Peso inválido', false);
+      return;
+    }
 
-    } else if (calculo < 18.5) {
-      retornaEstilo('background-color: var(--primary-color-abaixo)');
-      return resultado.innerHTML = `<p>Seu IMC é ${calculo.toFixed(2)} (Abaixo do peso)</p>`;
-    } else if (calculo >= 18.5 && calculo <= 24.9) {
-      retornaEstilo('background-color: var(--primary-color-normal)');
-      return resultado.innerHTML = `<p>Seu IMC é ${calculo.toFixed(2)} (Peso normal)</p>`;
-    } else if (calculo >= 25 && calculo <= 29.9) {
-      retornaEstilo('background-color: var(--primary-color-sobrepeso)');
-      return resultado.innerHTML = `<p>Seu IMC é ${calculo.toFixed(2)} (Sobrepeso)</p>`;
-    } else if (calculo >= 30 && calculo <= 34.9) {
-      retornaEstilo('background-color: var(--primary-color-obesidade)');
-      return resultado.innerHTML = `<p>Seu IMC é ${calculo.toFixed(2)} (Obesidade grau 1)</p>`;
-    } else if (calculo >= 35 && calculo <= 39.9) {
-      retornaEstilo('background-color: var(--primary-color-obesidade)');
-      return resultado.innerHTML = `<p>Seu IMC é ${calculo.toFixed(2)} (Obesidade grau 2)</p>`;
+    if (!altura) {
+      apresentaResult('Altura inválida', false);
+      return;
+    }
+
+    const imc = calculaIMC(peso, altura);
+    const resultado = grauImc(imc);
+
+    const msg = `Seu peso é ${imc} (${resultado})`
+
+    apresentaResult(msg, true);
+
+  });
+
+  function pontoFlutuante(valor) {
+    return valor.value.replace(',', '.');
+  }
+
+  function calculaIMC(peso, altura) {
+    return (peso / (altura ** 2)).toFixed(2);
+  }
+
+  function grauImc(imc) {
+    const nivel = ['Abaixo do peso', 'Peso normal', 'Sobrepeso', 'Obesidade grau 1', 'Obesidade grau 2', 'Obesidade grau 3'];
+    if (imc >= 39.9) return nivel[5];
+    if (imc >= 34.9) return nivel[4];
+    if (imc >= 29.9) return nivel[3];
+    if (imc >= 24.9) return nivel[2];
+    if (imc >= 18.5) return nivel[1];
+    if (imc < 18.5) return nivel[0];
+  }
+
+  function criaP() {
+    const p = document.createElement('p');
+    return p;
+  }
+
+  function apresentaResult(msg, isValid) {
+    const resultado = document.querySelector('.resultado');
+    resultado.innerHTML = '';
+
+    const p = criaP();
+    if (isValid) {
+      p.classList.add('paragrafo-resultado');
     } else {
-      retornaEstilo('background-color: var(--primary-color-obesidade)');
-      return resultado.innerHTML = `<p>Seu IMC é ${calculo.toFixed(2)} (Obesidade grau 3)</p>`;
+      p.classList.add('bad');
     }
-
+    p.innerHTML = msg;
+    resultado.appendChild(p);
   }
 
-  function retornaEstilo(estilo) {
-    return resultado.style = `${estilo}`;
-  }
-
-
-  form.addEventListener('submit', calculaIMC);
 }
 
 

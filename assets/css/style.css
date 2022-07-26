@@ -83,18 +83,11 @@ p {
   justify-content: space-between;
 }
 
-/* .result-p {
-  padding-left: 30%;
-} */
-
-.resultado {
-  padding: 5px;
-  border-radius: 10px;
-  color: var(--primary-color-black);
-  font-weight: bold;
-  font-size: 23px;
+.paragrafo-resultado, .bad {
+  background: rgb(109, 255, 182);
+  padding: 10px 20px;
 }
 
-/* .resultado p {
-  margin-left: 25%;
-} */
+.bad {
+  background: rgb(255, 150, 150);
+}
